@@ -1,7 +1,7 @@
 # EventHub Proposal
 
 ## 1. The pitch (one paragraph)
-The API lets users create, publish and manage events, such as meetups, concerts, workshops)
+The API lets users create, publish and manage events, such as meetups, concerts, workshops
 and allows users to find and RSVP to them. (add more info)
 
 ## 2. Resources
@@ -62,13 +62,20 @@ Mark each endpoint `public`, `user`, or `admin`. Mark which collection paginates
 filters or sorts.
 
 ## 5. Technical choices
-- **Database host:** (Neon, Supabase, Railway, Atlas, ...) and why
-- **OAuth2 provider:** (Google, GitHub, Auth0) and confirmation that it supports Authorization Code + PKCE from a native app
-- **Repo layout:** monorepo or split, and why
-These become your ADRs later.
+- **Database host:** Neon PostgreSQL. We chose Neon because it provides a managed PostgreSQL database that can be used by our backend without requiring us to manage the database server ourselves
+
+- **OAuth2 provider:** Google. Google supports the OAuth 2.0 Authorization Code flow for applications, and PKCE can be used with native/mobile applications. Our Android application will use Authorization Code + PKCE for user authentication
+
+- **Repo layout:** Monorepo. The frontend and backend will be kept in the same repository under separate folders (`/frontend` and `/backend`). This keeps the project in one place and makes it easier for the team to coordinate changes between the Android application and API.
+  One important thing
 
 ## 6. Risks
 The two things most likely to go wrong, and what you will do first to find out.
+- **Authentication and authorization:** OAuth2 and user roles may not work correctly between the Android app and backend. We will first test the login flow with a basic authenticated API request and verify that USER and ADMIN permissions are enforced correctly.
+
+- **Event and RSVP data:** Relationships between users, events, categories, and RSVPs could cause database or API issues. We will first create the database tables and test creating an event and submitting an RSVP to verify that the relationships and constraints work correctly
 
 ## 7. Team and Sprint 1
 Who owns what in Sprint 1. Link your Project board and Sprint 1 milestone.
+
+
