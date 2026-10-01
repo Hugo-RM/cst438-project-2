@@ -1,8 +1,8 @@
-package com.example.cst438project2.database
+package com.cst438.project2.database
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import com.example.cst438project2.database.entities.User
+import com.cst438.project2.database.entities.User
 
 @Dao
 interface UserDAO {

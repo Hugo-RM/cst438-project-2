@@ -1,10 +1,10 @@
-package com.example.cst438project2.database
+package com.cst438.project2.database
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.example.cst438project2.database.entities.User
+import com.cst438.project2.database.entities.User
 import java.util.concurrent.Executors
 
 @Database(entities = [User::class], version = 1, exportSchema = false)
