@@ -78,4 +78,12 @@ The two things most likely to go wrong, and what you will do first to find out.
 ## 7. Team and Sprint 1
 Who owns what in Sprint 1. Link your Project board and Sprint 1 milestone.
 
+### Sprint 1 Ownership
 
+- **Victor Borba:** UserDAO, UserEntity, and database setup
+- **Linus Schaub:** Sign-up
+- - **Justin Tzeng:**  Loging page
+- **Hugo Ruiz-Mireles:** GitHub Actions and CI setup
+
+- **Project board:** https://github.com/users/Hugo-RM/projects/3/views/1
+- **Sprint 1 milestone:** https://github.com/Hugo-RM/cst438-project-2/milestones
