@@ -54,10 +54,20 @@ erDiagram
 ```
 
 ## 4. Endpoints
-| Verb | Path | Auth | Purpose |
-|---|---|---|---|
-| GET | /api/v1/workouts?page=0&size=20 | user | list my workouts (paginated) |
-| ... | ... | ... | ... |
+| Verb   | Path                                                        | Auth   | Purpose                                                 |
+|--------|-------------------------------------------------------------|--------|---------------------------------------------------------|
+| GET    | /api/v1/events?page=0&size=20&category=&from=&sort=startsAt | public | list events published (**paginated filters:** category) |
+| GET    | /api/v1/events/{id}                                         | public | event details                                           |
+| POST   | /api/v1/events                                              | user   | create an event                                         |
+| PUT    | /api/v1/events/{id}                                         | user   | update my event (only for organizers)                   |
+| DELETE | /api/v1/events/{id}                                         | user   | delete my event (only for organizers)                   |
+| GET    | /api/v1/users/me/events                                     | user   | events I organize                                       |
+| POST   | /api/v1/events/{id}/rsvps                                   | user   | RSVP to an event                                        |
+| DELETE | /api/v1/events/{id}/rsvps                                   | user   | cancel my RSVP                                          |
+| GET    | /api/v1/events/{id}/rsvps                                   | user   | attendee  list (only for organizers)                    |
+| GET    | /api/v1/categories                                          | public | list category                                           |
+| POST   | /api/v1/categories                                          | admin  | create a category                                       |
+| DELETE | /api/v1/admin/events/{id}                                   | admin  | remove any event (moderation)                           |
 Mark each endpoint `public`, `user`, or `admin`. Mark which collection paginates and which
 filters or sorts.
 
