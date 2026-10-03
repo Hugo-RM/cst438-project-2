@@ -11,6 +11,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,7 +26,7 @@ import androidx.compose.foundation.Image
 import com.cst438.project2.R
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(onSignUpClick: () -> Unit = {}) {
     var username by remember {
         mutableStateOf("")
     }
@@ -104,6 +105,10 @@ fun LoginScreen() {
 
         Spacer(modifier = Modifier.height(15.dp))
         Text(text =message)
+
+        TextButton(onClick = onSignUpClick) {
+            Text("Create an account")
+        }
 
 
 
