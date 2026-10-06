@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: backend
+
+  datasource:
+    url: 'jdbc:postgresql://ep-long-river-b48bmnwr-pooler.c-6.us-east-2.aws.neon.tech/neondb?sslmode=require'
+    username: 'neondb_owner'
+    password: 'npg_5YXTEk4yFDGa'
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
