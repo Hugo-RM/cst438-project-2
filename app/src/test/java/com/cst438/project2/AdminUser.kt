@@ -1,4 +1,4 @@
-package com.cst438.project2.ui
+package com.cst438.project2
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
