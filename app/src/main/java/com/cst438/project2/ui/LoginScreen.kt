@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -23,10 +22,17 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.Image
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import com.cst438.project2.R
 
 @Composable
-fun LoginScreen(onSignUpClick: () -> Unit = {}) {
+fun LoginScreen(
+    AdminLogin: () -> Unit,
+    EventPage: () -> Unit,
+    onSignUpClick: () -> Unit = {}
+
+) {
+
     var username by remember {
         mutableStateOf("")
     }
@@ -73,13 +79,12 @@ fun LoginScreen(onSignUpClick: () -> Unit = {}) {
 
         OutlinedTextField(
             value = password,
-            onValueChange = {
-                password = it
-            },
-            label = {
-                Text("Password")
-            },
-            modifier = Modifier.fillMaxWidth()
+            onValueChange = { password = it },
+            label = {Text("Password")},
+                visualTransformation = PasswordVisualTransformation(),
+                modifier = Modifier.fillMaxWidth()
+
+
         )
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -87,7 +92,10 @@ fun LoginScreen(onSignUpClick: () -> Unit = {}) {
         Button(
             onClick = {
                 if (username == "Justin" && password == "hello") {
-                    message = "Logging in"
+                    EventPage()
+
+                } else if (username == "Victor" && password == "admin123") {
+                    AdminLogin()
 
                 } else {
                     message = "Wrong username or password"

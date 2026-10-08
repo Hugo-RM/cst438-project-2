@@ -92,7 +92,7 @@ Who owns what in Sprint 1. Link your Project board and Sprint 1 milestone.
 
 - **Victor Borba:** UserDAO, UserEntity, and database setup
 - **Linus Schaub:** Sign-up
-- - **Justin Tzeng:**  Loging page
+- **Justin Tzeng:**  Loging page
 - **Hugo Ruiz-Mireles:** GitHub Actions and CI setup
 
 - **Project board:** https://github.com/users/Hugo-RM/projects/3/views/1
