@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,7 +28,9 @@ import com.cst438.project2.R
 @Composable
 fun LoginScreen(
     AdminLogin: () -> Unit,
-    EventPage: () -> Unit
+    EventPage: () -> Unit,
+    onSignUpClick: () -> Unit = {}
+
 ) {
 
     var username by remember {
@@ -110,6 +113,10 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(15.dp))
         Text(text =message)
+
+        TextButton(onClick = onSignUpClick) {
+            Text("Create an account")
+        }
 
 
 
