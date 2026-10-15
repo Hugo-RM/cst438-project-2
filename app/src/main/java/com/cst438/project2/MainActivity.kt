@@ -18,6 +18,8 @@ class MainActivity : ComponentActivity() {
             val showAdmin = remember { mutableStateOf(false) }
             val showEvent = remember { mutableStateOf(false) }
             val showSignUp = remember { mutableStateOf(false) }
+            val showProfile = remember { mutableStateOf(false) }
+            val showCreateEvent = remember { mutableStateOf(false) }
 
             if(showAdmin.value) {
                 AdminScreen(logout = {
@@ -25,7 +27,27 @@ class MainActivity : ComponentActivity() {
                 })
 
             } else if(showEvent.value){
-                EventScreen()
+                EventScreen(
+                    onHomeClick = {
+                        showCreateEvent.value = false
+                        showProfile.value = false
+                    },
+                    onCreateEventClick = {
+                        showCreateEvent.value = true
+                        showProfile.value = false
+                    },
+
+                    onProfileClick = {
+                        showProfile.value = true
+                        showProfile.value = false
+                    },
+                    onLogoutClick = {
+                        showEvent.value = false
+                        showCreateEvent.value = false
+                        showProfile.value = false
+                    }
+
+                )
 
 
             } else if(showSignUp.value) {
