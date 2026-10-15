@@ -1,0 +1,33 @@
+# Local development: `docker compose up --build` starts the API and a throwaway Postgres.
+# The deployed API uses the remote Neon database instead; set DATABASE_* in .env to point at it.
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: eventhub
+      POSTGRES_USER: eventhub
+      POSTGRES_PASSWORD: eventhub
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U eventhub -d eventhub"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: ./backend
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-jdbc:postgresql://db:5432/eventhub}
+      DATABASE_USERNAME: ${DATABASE_USERNAME:-eventhub}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD:-eventhub}
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  db-data:
