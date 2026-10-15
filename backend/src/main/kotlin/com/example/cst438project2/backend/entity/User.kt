@@ -13,5 +13,9 @@ class User(
     var username: String = "",
 
     @Column(nullable = false)
-    var isAdmin: Boolean = false
+    var isAdmin: Boolean = false,
+
+    // Nullable for existing rows: accounts without a hash cannot use password login.
+    @Column(name = "password_hash")
+    var passwordHash: String? = null
 )

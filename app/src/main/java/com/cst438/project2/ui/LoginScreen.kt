@@ -24,104 +24,70 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.Image
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import com.cst438.project2.R
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.imePadding
+import kotlinx.coroutines.launch
 
+/** Login form backed by the remote user database. */
 @Composable
 fun LoginScreen(
-    AdminLogin: () -> Unit,
-    EventPage: () -> Unit,
-    onSignUpClick: () -> Unit = {}
-
+    onSignUpClick: () -> Unit = {},
+    AdminLogin: () -> Unit = {},
+    EventPage: () -> Unit = {},
+    authenticate: suspend (String, String) -> com.cst438.project2.auth.AuthUser = { username, password ->
+        com.cst438.project2.auth.AuthApi().login(username, password)
+    }
 ) {
-
-    var username by remember {
-        mutableStateOf("")
-    }
-
-    var password by remember {
-        mutableStateOf("")
-    }
-
-    var message by remember {
-        mutableStateOf("")
-    }
+    var username by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var message by remember { mutableStateOf("") }
+    var loading by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(30.dp),
+        modifier = Modifier.fillMaxSize().imePadding().verticalScroll(rememberScrollState()).padding(30.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-
-        Image (painter = painterResource(id = R.drawable.login_logo),
-            contentDescription = "Login logo",
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(300.dp),
-            contentScale = ContentScale.Fit)
-
-
-
-        Text(text ="Login to EventHub")
-        Spacer(modifier = Modifier.height(30.dp))
-
-        OutlinedTextField(
-            value = username,
-            onValueChange = {
-                username = it
-            },
-            label = {
-                Text("Username")
-            },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(20.dp))
-
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = {Text("Password")},
-                visualTransformation = PasswordVisualTransformation(),
-                modifier = Modifier.fillMaxWidth()
-
-
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Button(
-            onClick = {
-                if (username == "Justin" && password == "hello") {
-                    EventPage()
-
-                } else if (username == "Victor" && password == "admin123") {
-                    AdminLogin()
-
-                } else {
-                    message = "Wrong username or password"
-
+        Image(painter = painterResource(R.drawable.login_logo), contentDescription = "Login logo",
+            modifier = Modifier.fillMaxWidth().height(180.dp), contentScale = ContentScale.Fit)
+        Text("Login to EventHub")
+        Spacer(Modifier.height(24.dp))
+        OutlinedTextField(value = username, onValueChange = { username = it },
+            label = { Text("Username") }, singleLine = true, enabled = !loading,
+            modifier = Modifier.fillMaxWidth())
+        Spacer(Modifier.height(16.dp))
+        OutlinedTextField(value = password, onValueChange = { password = it },
+            label = { Text("Password") }, singleLine = true, enabled = !loading,
+            visualTransformation = PasswordVisualTransformation(), modifier = Modifier.fillMaxWidth())
+        Spacer(Modifier.height(20.dp))
+        Button(enabled = !loading, modifier = Modifier.fillMaxWidth(), onClick = {
+            if (username.isBlank() || password.isBlank()) {
+                message = "Username and password are required"
+            } else {
+                loading = true
+                message = "Signing in…"
+                scope.launch {
+                    try {
+                        val user = authenticate(username.trim(), password)
+                        password = ""
+                        message = "Login successful"
+                        if (user.isAdmin) AdminLogin() else EventPage()
+                    } catch (cancelled: kotlinx.coroutines.CancellationException) {
+                        throw cancelled
+                    } catch (error: java.io.IOException) {
+                        message = error.message ?: "Cannot connect to the server"
+                    } catch (_: Exception) {
+                        message = "Could not sign in. Please try again"
+                    } finally {
+                        loading = false
+                    }
                 }
-
-
-            },
-            modifier = Modifier.fillMaxWidth()
-
-        ) {
-
-            Text("Login")
-        }
-
-        Spacer(modifier = Modifier.height(15.dp))
-        Text(text =message)
-
-        TextButton(onClick = onSignUpClick) {
-            Text("Create an account")
-        }
-
-
-
-
-
+            }
+        }) { Text(if (loading) "Signing in…" else "Login") }
+        Text(message, modifier = Modifier.padding(top = 16.dp))
+        TextButton(onClick = onSignUpClick, enabled = !loading) { Text("Create an account") }
     }
-
 }
