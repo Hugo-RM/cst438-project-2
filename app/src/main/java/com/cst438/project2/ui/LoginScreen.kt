@@ -41,7 +41,7 @@ import androidx.credentials.exceptions.NoCredentialException
 
 
 private const val SERVER_CLIENT_ID =
-    "878293662-rnlv9k5d85ebc5r52v0it4lkm33cp5k5.apps.googleusercontent.com"
+    "878293662-pg8la953ki9obc1880uervpgact6mvji.apps.googleusercontent.com"
 suspend fun signInWithGoogle(context: Context): String {
     val credentialManager = CredentialManager.create(context)
 
