@@ -1,5 +1,8 @@
 package com.cst438.project2.ui
 
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -12,6 +15,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,13 +31,18 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun SignUpScreen(
     onBackToLogin: () -> Unit = {},
-    onAccountCreated: (username: String, password: String) -> Unit = { _, _ -> }
+    onAccountCreated: () -> Unit = {},
+    register: suspend (String, String) -> com.cst438.project2.auth.AuthUser = { username, password ->
+        com.cst438.project2.auth.AuthApi().register(username, password)
+    }
 ) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var message by remember { mutableStateOf("") }
     var isError by remember { mutableStateOf(false) }
+    var loading by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
 
     fun submit() {
         val error = when {
@@ -47,15 +57,36 @@ fun SignUpScreen(
             message = error
             isError = true
         } else {
-            message = "Account created"
+            loading = true
+            message = "Creating account…"
             isError = false
-            onAccountCreated(username.trim(), password)
+            scope.launch {
+                try {
+                    register(username.trim(), password)
+                    password = ""
+                    confirmPassword = ""
+                    message = "Account created. You can now log in"
+                    onAccountCreated()
+                } catch (cancelled: kotlinx.coroutines.CancellationException) {
+                    throw cancelled
+                } catch (error: java.io.IOException) {
+                    message = error.message ?: "Cannot connect to the server"
+                    isError = true
+                } catch (_: Exception) {
+                    message = "Could not create account. Please try again"
+                    isError = true
+                } finally {
+                    loading = false
+                }
+            }
         }
     }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .imePadding()
+            .verticalScroll(rememberScrollState())
             .padding(30.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -68,6 +99,7 @@ fun SignUpScreen(
             onValueChange = { username = it },
             label = { Text("Username") },
             singleLine = true,
+            enabled = !loading,
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(16.dp))
@@ -77,6 +109,7 @@ fun SignUpScreen(
             onValueChange = { password = it },
             label = { Text("Password") },
             singleLine = true,
+            enabled = !loading,
             visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth()
         )
@@ -87,13 +120,14 @@ fun SignUpScreen(
             onValueChange = { confirmPassword = it },
             label = { Text("Confirm password") },
             singleLine = true,
+            enabled = !loading,
             visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(20.dp))
 
-        Button(onClick = ::submit, modifier = Modifier.fillMaxWidth()) {
-            Text("Sign Up")
+        Button(onClick = ::submit, enabled = !loading, modifier = Modifier.fillMaxWidth()) {
+            Text(if (loading) "Creating account…" else "Sign Up")
         }
 
         if (message.isNotEmpty()) {
@@ -105,7 +139,7 @@ fun SignUpScreen(
             )
         }
 
-        TextButton(onClick = onBackToLogin) {
+        TextButton(onClick = onBackToLogin, enabled = !loading) {
             Text("Back to Login")
         }
     }

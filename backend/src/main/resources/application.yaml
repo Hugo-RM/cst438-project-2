@@ -3,11 +3,11 @@ spring:
     name: backend
 
   datasource:
-    url: 'jdbc:postgresql://ep-long-river-b48bmnwr-pooler.c-6.us-east-2.aws.neon.tech/neondb?sslmode=require'
-    username: 'neondb_owner'
-    password: 'npg_5YXTEk4yFDGa'
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
 
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
