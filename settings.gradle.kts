@@ -1,3 +1,16 @@
+// Fix AGP AndroidLocationsException when both ANDROID_PREFS_ROOT and ANDROID_USER_HOME env vars exist
+try {
+    val processEnv = Class.forName("java.lang.ProcessEnvironment")
+    val theEnvironmentField = processEnv.getDeclaredField("theEnvironment").apply { isAccessible = true }
+    @Suppress("UNCHECKED_CAST")
+    (theEnvironmentField.get(null) as? MutableMap<String, String>)?.remove("ANDROID_PREFS_ROOT")
+
+    val theCaseInsensitiveField = processEnv.getDeclaredField("theCaseInsensitiveEnvironment").apply { isAccessible = true }
+    @Suppress("UNCHECKED_CAST")
+    (theCaseInsensitiveField.get(null) as? MutableMap<String, String>)?.remove("ANDROID_PREFS_ROOT")
+} catch (_: Exception) {
+}
+
 pluginManagement {
     repositories {
         google {
@@ -11,6 +24,9 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "0.10.0"
+}
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -20,4 +36,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "cst438-project-2"
-include(":app")
+include(":app", ":backend")

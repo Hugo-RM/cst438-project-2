@@ -6,6 +6,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import com.cst438.project2.ui.LoginScreen
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
@@ -16,8 +17,15 @@ class LoginScreenTest {
 
     @Test
     fun successfulLogin() {
+        var eventPageCalled = false
+
         composeTestRule.setContent {
-            LoginScreen()
+            LoginScreen(
+                AdminLogin = {},
+                EventPage = {
+                    eventPageCalled = true
+                }
+            )
         }
 
         composeTestRule
@@ -32,15 +40,44 @@ class LoginScreenTest {
             .onNodeWithText("Login")
             .performClick()
 
+        assertTrue(eventPageCalled)
+    }
+
+    @Test
+    fun adminLogin() {
+        var adminLoginCalled = false
+
+        composeTestRule.setContent {
+            LoginScreen(
+                AdminLogin = {
+                    adminLoginCalled = true
+                },
+                EventPage = {}
+            )
+        }
+
         composeTestRule
-            .onNodeWithText("Logging in")
-            .assertIsDisplayed()
+            .onNodeWithText("Username")
+            .performTextInput("Victor")
+
+        composeTestRule
+            .onNodeWithText("Password")
+            .performTextInput("admin123")
+
+        composeTestRule
+            .onNodeWithText("Login")
+            .performClick()
+
+        assertTrue(adminLoginCalled)
     }
 
     @Test
     fun incorrectLogin() {
         composeTestRule.setContent {
-            LoginScreen()
+            LoginScreen(
+                AdminLogin = {},
+                EventPage = {}
+            )
         }
 
         composeTestRule
