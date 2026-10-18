@@ -9,8 +9,11 @@ class User(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
 
-    @Column(unique = true)
-    var username: String? = null,
+    @Column(nullable = false, unique = true)
+    var username: String = "",
+
+    @Column(name = "oauth_subject", unique = true)
+    var oauthSubject: String? = null,
 
     @Column(nullable = false)
     var isAdmin: Boolean = false,
