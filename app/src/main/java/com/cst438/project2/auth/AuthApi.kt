@@ -31,10 +31,18 @@ class AuthApi(private val baseUrl: String = BuildConfig.API_BASE_URL) {
                 connection.setRequestProperty("Content-Type", "application/json; charset=utf-8")
                 connection.setRequestProperty("Accept", "application/json, application/problem+json")
                 val payload = JSONObject().put("username", username.trim()).put("password", password)
-                connection.outputStream.use { it.write(payload.toString().toByteArray(Charsets.UTF_8)) }
+                val bytes = payload.toString().toByteArray(Charsets.UTF_8)
+                connection.setFixedLengthStreamingMode(bytes.size)
+                connection.outputStream.use { it.write(bytes) }
+
                 val status = connection.responseCode
                 if (status !in 200..299) {
-                    throw IOException(when (status) {
+                    val serverDetail = try {
+                        val errText = connection.errorStream?.bufferedReader()?.use { it.readText() }
+                        if (!errText.isNullOrEmpty()) JSONObject(errText).optString("detail").ifBlank { null } else null
+                    } catch (_: Exception) { null }
+
+                    throw IOException(serverDetail ?: when (status) {
                         400 -> "Check your username and password requirements"
                         401 -> "Wrong username or password"
                         409 -> "Username already exists"

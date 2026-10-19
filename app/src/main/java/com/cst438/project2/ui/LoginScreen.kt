@@ -81,7 +81,8 @@ suspend fun signInWithGoogle(context: Context): String {
 
 suspend fun authenticateWithBackend(idToken: String): Boolean =
     withContext(Dispatchers.IO) {
-        val url = URL("http://10.0.2.2:8080/api/v1/users/me")
+        val baseUrl = com.cst438.project2.BuildConfig.API_BASE_URL.trimEnd('/')
+        val url = URL("$baseUrl/api/v1/users/me")
         val connection = url.openConnection() as HttpURLConnection
 
         try {
