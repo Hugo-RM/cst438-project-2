@@ -2,10 +2,11 @@ spring:
   application:
     name: backend
 
+  # Defaults point at the local Postgres from docker-compose.yml; the host sets the real values.
   datasource:
-    url: ${DATABASE_URL}
-    username: ${DATABASE_USERNAME}
-    password: ${DATABASE_PASSWORD}
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/eventhub}
+    username: ${DATABASE_USERNAME:eventhub}
+    password: ${DATABASE_PASSWORD:eventhub}
 
   jpa:
     hibernate:
@@ -20,4 +21,4 @@ spring:
 
 app:
   google:
-    client-id: ${GOOGLE_CLIENT_ID}
+    client-id: ${GOOGLE_CLIENT_ID:}
