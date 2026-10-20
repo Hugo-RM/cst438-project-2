@@ -1,9 +1,0 @@
-.gradle
-build
-.idea
-.kotlin
-*.iml
-.env
-.env.*
-src/test
-Dockerfile

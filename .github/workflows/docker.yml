@@ -4,11 +4,19 @@ on:
   pull_request:
     paths:
       - 'backend/**'
+      - 'gradle/**'
+      - '*.gradle.kts'
+      - 'gradle.properties'
+      - '.dockerignore'
       - '.github/workflows/docker.yml'
   push:
     branches: [main]
     paths:
       - 'backend/**'
+      - 'gradle/**'
+      - '*.gradle.kts'
+      - 'gradle.properties'
+      - '.dockerignore'
       - '.github/workflows/docker.yml'
 
 concurrency:
@@ -48,7 +56,8 @@ jobs:
 
       - uses: docker/build-push-action@v6
         with:
-          context: backend
+          context: .
+          file: backend/Dockerfile
           push: ${{ github.event_name == 'push' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

@@ -1,14 +1,17 @@
-# Stage 1: build the jar with Gradle (JDK 25 matches the toolchain in build.gradle.kts)
-FROM eclipse-temurin:25-jdk AS build
+# Built from the repo root (one Gradle build for app + backend):
+#   docker build -f backend/Dockerfile .
+# Stage 1: build the jar with Gradle (Temurin 17 is the daemon JVM in gradle/gradle-daemon-jvm.properties)
+FROM eclipse-temurin:17-jdk AS build
 WORKDIR /workspace
-COPY gradlew settings.gradle.kts build.gradle.kts ./
+COPY gradlew settings.gradle.kts build.gradle.kts gradle.properties ./
 COPY gradle gradle
-RUN chmod +x gradlew && ./gradlew --no-daemon dependencies > /dev/null
-COPY src src
-RUN ./gradlew --no-daemon bootJar && cp build/libs/backend-*-SNAPSHOT.jar app.jar
+COPY backend/build.gradle.kts backend/
+RUN chmod +x gradlew && ./gradlew --no-daemon :backend:dependencies > /dev/null
+COPY backend/src backend/src
+RUN ./gradlew --no-daemon :backend:bootJar && cp backend/build/libs/backend-*-SNAPSHOT.jar app.jar
 
 # Stage 2: run only the jar on a JRE; no Gradle, no source
-FROM eclipse-temurin:25-jre
+FROM eclipse-temurin:17-jre
 WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends curl \
     && rm -rf /var/lib/apt/lists/* \
