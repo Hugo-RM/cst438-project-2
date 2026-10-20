@@ -1,135 +1,199 @@
 package com.cst438.project2.ui
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.Modifier
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.Card
 import androidx.compose.foundation.lazy.items
-import androidx.compose.ui.Alignment
-import androidx.compose.foundation.layout.safeDrawingPadding
-
-
-data class AdminUser (
-    val id: Long,
-    val email: String,
-    val displayName: String,
-    val role: String
-)
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.cst438.project2.auth.AdminAccount
+import com.cst438.project2.auth.AdminApi
+import com.cst438.project2.auth.AuthSession
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.launch
+import java.io.IOException
 
 @Composable
 fun AdminScreen(logout: () -> Unit) {
-    //temp sign in  credentials
-    val users = listOf (
-        AdminUser(1, "linus@email.com", "Linus Schaub", "USER"),
-        AdminUser(2, "hujo@email.com", "Hugo Ruiz-Mireles", "USER"),
-        AdminUser(3, "victor@email.com", "Victor Borba", "ADMIN")
+    val token = AuthSession.googleToken
+    val api = remember { AdminApi() }
+    val scope = rememberCoroutineScope()
 
+    var users by remember(token) {
+        mutableStateOf<List<AdminAccount>>(emptyList())
+    }
+    var loading by remember(token) { mutableStateOf(false) }
+    var error by remember(token) { mutableStateOf<String?>(null) }
+    var refresh by remember { mutableStateOf(0) }
+    var selectedUser by remember(token) {
+        mutableStateOf<AdminAccount?>(null)
+    }
+    var deleting by remember(token) { mutableStateOf(false) }
 
-    )
+    LaunchedEffect(token, refresh) {
+        if (token.isNullOrBlank()) {
+            error = "Please sign in with Google to manage users"
+            return@LaunchedEffect
+        }
+
+        loading = true
+        error = null
+
+        try {
+            users = api.getUsers(token)
+        } catch (cancelled: CancellationException) {
+            throw cancelled
+        } catch (exception: IOException) {
+            error = exception.message ?: "Cannot connect to the server"
+        } catch (_: Exception) {
+            error = "Could not load users. Please try again"
+        } finally {
+            loading = false
+        }
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .safeDrawingPadding()
             .padding(16.dp)
-
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = "Admin Page",
-                style = MaterialTheme.typography.headlineMedium
-            )
-
-            Button(
-                onClick = logout
-            ) {
-                Text("Logout")
-
-
-            }
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text (
-            text = "Manage users",
-            style = MaterialTheme.typography.bodyLarge
+        Text(
+            text = "Admin Page",
+            style = MaterialTheme.typography.headlineMedium
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Button(
+                enabled = !loading && !deleting &&
+                        !token.isNullOrBlank(),
+                onClick = { refresh++ }
+            ) {
+                Text("Refresh")
+            }
+
+            TextButton(
+                onClick = {
+                    AuthSession.clear()
+                    logout()
+                }
+            ) {
+                Text("Logout")
+            }
+        }
+
+        Spacer(Modifier.height(16.dp))
+
+        if (loading || deleting) {
+            CircularProgressIndicator()
+            Spacer(Modifier.height(12.dp))
+        }
+
+        error?.let { message ->
+            Text(
+                text = message,
+                color = MaterialTheme.colorScheme.error
+            )
+
+            if (!token.isNullOrBlank()) {
+                TextButton(
+                    enabled = !loading && !deleting,
+                    onClick = { refresh++ }
+                ) {
+                    Text("Retry")
+                }
+            }
+
+            Spacer(Modifier.height(12.dp))
+        }
+
+        if (!loading && error == null && users.isEmpty()) {
+            Text("No users found")
+        }
 
         LazyColumn(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            items(users) {
-                user -> UserCard(user)
+            items(users, key = { it.id }) { user ->
+                Card(modifier = Modifier.fillMaxWidth()) {
+                    Column(Modifier.padding(16.dp)) {
+                        Text(
+                            text = user.username ?: "Google account",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+
+                        Text("ID: ${user.id}")
+                        Text("Role: ${user.role}")
+
+                        Spacer(Modifier.height(8.dp))
+
+                        Button(
+                            enabled = !loading && !deleting &&
+                                    !token.isNullOrBlank(),
+                            onClick = { selectedUser = user }
+                        ) {
+                            Text("Remove")
+                        }
+                    }
+                }
             }
-
         }
-
-
     }
 
-}
-
-@Composable
-fun UserCard(user: AdminUser) {
-
-    Card(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-
-            Text(
-                text = user.displayName,
-                style = MaterialTheme.typography.titleMedium
-            )
-
-            Text(
-                text = user.email,
-                style = MaterialTheme.typography.bodyMedium
-            )
-
-            Text(
-                text = "Role: ${user.role}",
-                style = MaterialTheme.typography.bodyMedium
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-                Button(
+    selectedUser?.let { user ->
+        AlertDialog(
+            onDismissRequest = { selectedUser = null },
+            title = { Text("Delete user?") },
+            text = {
+                Text(
+                    "Delete ${user.username ?: "Google account"} " +
+                            "(ID: ${user.id})? Their organized events " +
+                            "and related RSVPs will also be removed."
+                )
+            },
+            dismissButton = {
+                TextButton(onClick = { selectedUser = null }) {
+                    Text("Cancel")
+                }
+            },
+            confirmButton = {
+                TextButton(
                     onClick = {
-                        // Nothing for now
+                        selectedUser = null
+
+                        if (!token.isNullOrBlank()) {
+                            deleting = true
+                            error = null
+
+                            scope.launch {
+                                try {
+                                    api.deleteUser(token, user.id)
+                                    users = users.filterNot {
+                                        it.id == user.id
+                                    }
+                                } catch (cancelled: CancellationException) {
+                                    throw cancelled
+                                } catch (exception: IOException) {
+                                    error = exception.message
+                                        ?: "Could not delete user"
+                                } catch (_: Exception) {
+                                    error = "Could not delete user"
+                                } finally {
+                                    deleting = false
+                                }
+                            }
+                        }
                     }
                 ) {
-                    Text("Remove")
+                    Text("Delete")
                 }
-
-
             }
-        }
+        )
     }
 }

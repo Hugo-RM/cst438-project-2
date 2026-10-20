@@ -30,7 +30,7 @@ import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
 import com.cst438.project2.R
-import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -48,10 +48,8 @@ private const val SERVER_CLIENT_ID =
 suspend fun signInWithGoogle(context: Context): String {
     val credentialManager = CredentialManager.create(context)
 
-    val googleOption = GetGoogleIdOption.Builder()
-        .setServerClientId(SERVER_CLIENT_ID)
-        .setFilterByAuthorizedAccounts(false)
-        .setAutoSelectEnabled(false)
+    val googleOption = GetSignInWithGoogleOption
+        .Builder(SERVER_CLIENT_ID)
         .build()
 
     val request = GetCredentialRequest.Builder()
@@ -162,11 +160,18 @@ fun LoginScreen(
             scope.launch {
                 try {
                     val idToken = signInWithGoogle(context)
-                    if (authenticateWithBackend(idToken)) {
-                        message = "Logged in with Google"
-                        EventPage()
+
+                    val account = com.cst438.project2.auth.AdminApi()
+                        .getCurrentUser(idToken)
+
+                    com.cst438.project2.auth.AuthSession.updateGoogleToken(idToken)
+
+                    message = "Logged in with Google"
+
+                    if (account.role == "ADMIN") {
+                        AdminLogin()
                     } else {
-                        message = "Backend rejected Google token"
+                        EventPage()
                     }
                 } catch (cancelled: kotlinx.coroutines.CancellationException) {
                     throw cancelled
