@@ -91,8 +91,10 @@ fun EventScreen(
                 }
 
                 "Profile" -> {
-                    Text("Profile")
+                    ProfileScreen()
                 }
+
+
             }
 
 
