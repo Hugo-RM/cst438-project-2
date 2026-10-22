@@ -14,6 +14,7 @@ import org.springframework.security.oauth2.jwt.JwtDecoders
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder
 import org.springframework.security.oauth2.jwt.JwtValidators
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.http.HttpMethod
 
 @Configuration
 class SecurityConfig(
@@ -63,9 +64,17 @@ class SecurityConfig(
                 it
                     .requestMatchers("/actuator/health").permitAll()
                     .requestMatchers(
-                        org.springframework.http.HttpMethod.POST,
-                        "/api/v1/auth/register",
-                        "/api/v1/auth/login"
+                        HttpMethod.GET,
+                        "/api/v1/health"
+                    ).permitAll()
+                    .requestMatchers(
+                        "/api/v1/auth/**"
+                    ).permitAll()
+                    .requestMatchers(
+                        HttpMethod.GET,
+                        "/api/v1/events",
+                        "/api/v1/events/*",
+                        "/api/v1/categories"
                     ).permitAll()
                     .anyRequest().authenticated()
             }

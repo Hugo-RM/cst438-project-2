@@ -1,7 +1,10 @@
 package com.example.cst438project2.backend.controller
 
+import com.example.cst438project2.backend.dto.EventResponse
 import com.example.cst438project2.backend.entity.User
 import com.example.cst438project2.backend.repository.UserRepository
+import com.example.cst438project2.backend.service.CurrentUserService
+import com.example.cst438project2.backend.service.EventService
 import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
@@ -23,8 +26,14 @@ data class CurrentUserResponse(
 @RestController
 @RequestMapping("/api/v1/users")
 class UserController(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val currentUserService: CurrentUserService,
+    private val eventService: EventService
 ) {
+    @GetMapping("/me/events")
+    fun myEvents(authentication: Authentication): List<EventResponse> =
+        eventService.getForOrganizer(currentUserService.getOrCreate(authentication))
+
     @GetMapping("/me")
     @Transactional
     fun currentUser(

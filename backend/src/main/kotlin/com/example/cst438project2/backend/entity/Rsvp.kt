@@ -1,6 +1,7 @@
 package com.example.cst438project2.backend.entity
 
 import jakarta.persistence.*
+import java.time.LocalDateTime
 
 @Entity
 @Table(name = "rsvps")
@@ -18,5 +19,8 @@ class Rsvp(
     var event: Event? = null,
 
     @Column(nullable = false)
-    var status: String = "GOING"
+    var status: String = "GOING",
+
+    @Column(nullable = false)
+    var createdAt: LocalDateTime = LocalDateTime.now()
 )
