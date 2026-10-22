@@ -1,0 +1,12 @@
+# The image only needs the Gradle build files and backend/; app/ must stay out (see settings.gradle.kts)
+*
+!gradlew
+!gradle/
+!settings.gradle.kts
+!build.gradle.kts
+!gradle.properties
+!backend/
+backend/build
+backend/.gradle
+backend/.kotlin
+backend/src/test

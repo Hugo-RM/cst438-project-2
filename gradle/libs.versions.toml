@@ -1,9 +1,9 @@
 [versions]
-agp = "8.7.2"
-kotlin = "2.1.20"
+agp = "8.13.2"
+kotlin = "2.3.21"
 coreKtx = "1.15.0"
 junit = "4.13.2"
-springBoot = "3.4.3"
+springBoot = "4.1.1"
 springDependencyManagement = "1.1.7"
 junitVersion = "1.3.0"
 espressoCore = "3.7.0"

@@ -69,7 +69,7 @@ class AuthService(private val users: UserRepository, private val appTokenService
         }
     }
 
-    private fun publicUser(user: User) = LoginUser(requireNotNull(user.id), user.username, user.isAdmin)
+    private fun publicUser(user: User) = LoginUser(requireNotNull(user.id), requireNotNull(user.username), user.isAdmin)
 }
 
 /** Username/password endpoints; OAuth2 and protected API sessions are separate work. */

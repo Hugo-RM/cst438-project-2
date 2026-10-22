@@ -2,10 +2,11 @@ spring:
   application:
     name: backend
 
+  # Defaults point at the local Postgres from docker-compose.yml; the host sets the real values.
   datasource:
-    url: 'jdbc:postgresql://ep-long-river-b48bmnwr-pooler.c-6.us-east-2.aws.neon.tech/neondb?sslmode=require'
-    username: 'neondb_owner'
-    password: ${DB_PASSWORD}
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/eventhub}
+    username: ${DATABASE_USERNAME:eventhub}
+    password: ${DATABASE_PASSWORD:eventhub}
 
   jpa:
     hibernate:
