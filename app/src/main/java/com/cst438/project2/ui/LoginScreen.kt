@@ -2,6 +2,7 @@ package com.cst438.project2.ui
 
 import android.content.Context
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -105,7 +106,7 @@ suspend fun authenticateWithBackend(idToken: String): Boolean =
 fun LoginScreen(
     onSignUpClick: () -> Unit = {},
     AdminLogin: () -> Unit = {},
-    EventPage: () -> Unit = {},
+    EventPage: (String) -> Unit = {},
     authenticate: suspend (String, String) -> com.cst438.project2.auth.AuthUser = { username, password ->
         com.cst438.project2.auth.AuthApi().login(username, password)
     }
@@ -143,15 +144,30 @@ fun LoginScreen(
                 scope.launch {
                     try {
                         val user = authenticate(username.trim(), password)
-                        password = ""
-                        message = "Login successful"
-                        if (user.isAdmin) AdminLogin() else EventPage()
+
+                        if (user.isAdmin) {
+                            password = ""
+                            message = "Admin login successful"
+                            AdminLogin()
+                        } else {
+                            val token = user.accessToken
+
+                            if (token.isNullOrBlank()) {
+                                message = "Login succeeded, but no access token was returned"
+                            } else {
+                                password = ""
+                                message = "Login successful"
+                                EventPage(token)
+                            }
+
+                        }
                     } catch (cancelled: kotlinx.coroutines.CancellationException) {
                         throw cancelled
                     } catch (error: java.io.IOException) {
-                        message = error.message ?: "Cannot connect to the server"
-                    } catch (_: Exception) {
-                        message = "Could not sign in. Please try again"
+                        message = error.message?.takeIf { it.isNotBlank() } ?: "Cannot connect to the server"
+                    } catch (error: Exception) {
+                        message = error.message?.takeIf { it.isNotBlank() }
+                            ?: "Could not sign in. Please try again"
                     } finally {
                         loading = false
                     }
@@ -165,7 +181,7 @@ fun LoginScreen(
                     val idToken = signInWithGoogle(context)
                     if (authenticateWithBackend(idToken)) {
                         message = "Logged in with Google"
-                        EventPage()
+                        EventPage(idToken)
                     } else {
                         message = "Backend rejected Google token"
                     }
@@ -178,7 +194,9 @@ fun LoginScreen(
                 }
             }
         }) { Text("Sign in with Google") }
-        Text(message, modifier = Modifier.padding(top = 16.dp))
+        if(message.isNotBlank()) {
+            Text (text = message, modifier = Modifier.fillMaxWidth().padding(top = 16.dp))
+        }
         TextButton(onClick = onSignUpClick, enabled = !loading) { Text("Create an account") }
     }
 }

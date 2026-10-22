@@ -9,7 +9,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 /** Public user data returned only after the backend accepts the credentials. */
-data class AuthUser(val id: Long, val username: String, val isAdmin: Boolean)
+data class AuthUser(val id: Long, val username: String, val isAdmin: Boolean, val accessToken: String? = null)
 
 /** Calls the backend on an IO dispatcher; the Android app never connects directly to Neon. */
 class AuthApi(private val baseUrl: String = BuildConfig.API_BASE_URL) {
@@ -50,7 +50,12 @@ class AuthApi(private val baseUrl: String = BuildConfig.API_BASE_URL) {
                     })
                 }
                 val json = connection.inputStream.bufferedReader().use { JSONObject(it.readText()) }
-                AuthUser(json.getLong("id"), json.getString("username"), json.getBoolean("admin"))
+                AuthUser(
+                    id = json.getLong("id"),
+                    username = json.getString("username"),
+                    isAdmin = json.getBoolean("admin"),
+                    accessToken = json.optString("accessToken").takeIf { it.isNotBlank() }
+                )
             } finally {
                 connection.disconnect()
             }
