@@ -22,3 +22,5 @@ spring:
 app:
   google:
     client-id: ${GOOGLE_CLIENT_ID:}
+  auth:
+    token-secret: ${APP_TOKEN_SECRET}

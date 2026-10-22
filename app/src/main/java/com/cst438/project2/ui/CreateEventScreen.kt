@@ -32,7 +32,15 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateEventScreen(
-    onCreateClick: () -> Unit = {}
+    categories: List<String> = listOf("Academic", "Social", "Sports", "Career", "Other"),
+    onCreateClick: (
+        title: String,
+        description: String,
+        category: String,
+        location: String,
+        eventDate: String,
+        startTime: String,
+        endTime: String) -> Unit
 ) {
     val context = LocalContext.current
 
@@ -44,15 +52,7 @@ fun CreateEventScreen(
     var endTime by remember { mutableStateOf("") }
     var categoryExpanded by remember { mutableStateOf(false) }
     var location by remember { mutableStateOf("") }
-
-
-    val categories = listOf(
-        "Academic",
-        "Social",
-        "Sports",
-        "Career",
-        "Other"
-    )
+    var formMessage by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -189,24 +189,26 @@ fun CreateEventScreen(
 
                 TimePickerDialog(
                     context,
-                    { _, hour, minute ->
-                        startTime = String.format(Locale.US, "%02d:%02d", hour, minute)
+                    { _, hourOfDay, minute ->
+                        startTime = String.format(
+                            Locale.US,
+                            "%02d:%02d",
+                            hourOfDay,
+                            minute
+                        )
                     },
-
                     calendar.get(Calendar.HOUR_OF_DAY),
                     calendar.get(Calendar.MINUTE),
                     false
                 ).show()
             },
             modifier = Modifier.fillMaxWidth()
-
         ) {
             Text(
                 if (startTime.isEmpty()) {
                     "Select Start Time"
-
                 } else {
-                    "Start Time: $startTime"
+                    "Start Time: ${formatTime(startTime)}"
                 }
             )
         }
@@ -236,14 +238,34 @@ fun CreateEventScreen(
                 if (endTime.isEmpty()) {
                     "Select End Time"
                 } else {
-                    "End Time: $endTime"
+                    "End Time: ${formatTime(endTime)}"
                 }
             )
         }
 
         //fillout everything
         Button(
-            onClick = onCreateClick,
+            onClick = {
+
+                if(endTime <= startTime) {
+                    formMessage = "End time must be later than start time"
+                } else {
+                    formMessage=""
+
+                    onCreateClick(
+                        title,
+                        description,
+                        category,
+                        location,
+                        eventDate,
+                        startTime,
+                        endTime
+
+                    )
+
+                }
+
+            },
             modifier = Modifier.fillMaxWidth(),
             enabled = title.isNotBlank() &&
                     description.isNotBlank() &&
@@ -255,6 +277,30 @@ fun CreateEventScreen(
         ) {
             Text("Create Event")
         }
+        if (formMessage.isNotBlank()) {
+            Text(text = formMessage, color = MaterialTheme.colorScheme.error)
+        }
     }
 }
+
+private fun formatTime(time: String): String {
+    val parts = time.split(":")
+    val hour = parts[0].toInt()
+    val minute = parts[1].toInt()
+
+    val period = if (hour < 12) "AM" else "PM"
+    val displayHour = when (hour % 12) {
+        0 -> 12
+        else -> hour % 12
+    }
+
+    return String.format(
+        Locale.US,
+        "%d:%02d %s",
+        displayHour,
+        minute,
+        period
+    )
+}
+
 

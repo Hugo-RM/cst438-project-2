@@ -2,6 +2,7 @@ package com.example.cst438project2.backend.auth
 
 import com.example.cst438project2.backend.entity.User
 import com.example.cst438project2.backend.repository.UserRepository
+import com.example.cst438project2.backend.service.AppTokenService
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ProblemDetail
@@ -15,11 +16,16 @@ import org.springframework.web.server.ResponseStatusException
 class Credentials(val username: String = "", val password: String = "")
 
 /** Only public account information is returned to the client. */
-data class LoginUser(val id: Long, val username: String, val admin: Boolean)
+data class LoginUser(
+    val id: Long,
+    val username: String,
+    val admin: Boolean,
+    val accessToken: String? = null
+)
 
 /** Checks database accounts using BCrypt instead of hardcoded Android credentials. */
 @Service
-class AuthService(private val users: UserRepository) {
+class AuthService(private val users: UserRepository, private val appTokenService: AppTokenService) {
     private val encoder = BCryptPasswordEncoder(12)
     private val dummyHash = encoder.encode("unused-timing-placeholder")
 
@@ -32,7 +38,7 @@ class AuthService(private val users: UserRepository) {
         if (user == null || hash == null || !matches) {
             throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "Wrong username or password")
         }
-        return publicUser(user)
+        return publicUser(user).copy(accessToken = appTokenService.createToken(user))
     }
 
     /** Creates a regular account; existing accounts can never be overwritten here. */

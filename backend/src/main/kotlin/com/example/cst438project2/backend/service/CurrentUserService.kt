@@ -9,15 +9,44 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.server.ResponseStatusException
 import org.springframework.http.HttpStatus
 
+
 @Service
 class CurrentUserService(private val userRepository: UserRepository) {
     @Transactional
     fun getOrCreate(authentication: Authentication): User {
         val jwt = authentication.principal as? Jwt
-        val subject = jwt?.subject ?: authentication.name
-        val email = jwt?.getClaimAsString("email")
+            ?: throw ResponseStatusException(
+                HttpStatus.UNAUTHORIZED,
+                "Invalid authentication token"
+            )
+
+        val subject = jwt.subject
+            ?: throw ResponseStatusException(
+                HttpStatus.UNAUTHORIZED,
+                "Token is missing its subject"
+            )
+
+        if (jwt.getClaimAsString("auth_type") == "password") {
+            val userId = subject.toLongOrNull()
+                ?: throw ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Invalid user ID in token"
+                )
+
+            return userRepository.findById(userId).orElseThrow {
+                ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "User account not found"
+                )
+            }
+        }
+
+
+        val email = jwt.getClaimAsString("email")
+
         val existing = userRepository.findByOauthSubject(subject)
             ?: email?.let { userRepository.findByUsername(it) }
+
         if (existing != null) {
             if (existing.oauthSubject == null) {
                 existing.oauthSubject = subject
@@ -31,10 +60,12 @@ class CurrentUserService(private val userRepository: UserRepository) {
             User(username = username, oauthSubject = subject)
         )
     }
-
     fun requireAdmin(user: User) {
         if (!user.isAdmin) {
-            throw ResponseStatusException(HttpStatus.FORBIDDEN, "Administrator access required")
+            throw ResponseStatusException(
+                HttpStatus.FORBIDDEN,
+                "Admin access required"
+            )
         }
     }
 }

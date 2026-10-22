@@ -1,3 +1,6 @@
+import java.security.SecureRandom
+import java.util.Base64
+
 plugins {
     alias(libs.plugins.kotlinJvm)
     alias(libs.plugins.kotlin.spring)
@@ -52,4 +55,6 @@ allOpen {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+    // Throwaway signing key so the app context starts in tests; real deployments set APP_TOKEN_SECRET
+    environment("APP_TOKEN_SECRET", Base64.getEncoder().encodeToString(SecureRandom().generateSeed(32)))
 }
