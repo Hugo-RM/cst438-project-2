@@ -15,8 +15,8 @@ interface EventRepository : JpaRepository<Event, Long> {
         """
         select e from Event e
         where e.status = 'PUBLISHED'
-          and (:category is null or lower(e.category.name) = lower(:category))
-          and (:fromTime is null or e.startsAt >= :fromTime)
+          and lower(e.category.name) = lower(coalesce(:category, e.category.name))
+          and e.startsAt >= coalesce(:fromTime, e.startsAt)
         """
     )
     fun findPublished(
