@@ -20,8 +20,14 @@ class CurrentUserService(private val userRepository: UserRepository) {
                 "Invalid authentication token"
             )
 
+        val subject = jwt.subject
+            ?: throw ResponseStatusException(
+                HttpStatus.UNAUTHORIZED,
+                "Token is missing its subject"
+            )
+
         if (jwt.getClaimAsString("auth_type") == "password") {
-            val userId = jwt.subject.toLongOrNull()
+            val userId = subject.toLongOrNull()
                 ?: throw ResponseStatusException(
                     HttpStatus.UNAUTHORIZED,
                     "Invalid user ID in token"
@@ -36,7 +42,6 @@ class CurrentUserService(private val userRepository: UserRepository) {
         }
 
 
-        val subject = jwt.subject
         val email = jwt.getClaimAsString("email")
 
         val existing = userRepository.findByOauthSubject(subject)

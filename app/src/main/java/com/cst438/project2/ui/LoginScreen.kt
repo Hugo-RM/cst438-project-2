@@ -105,7 +105,7 @@ suspend fun authenticateWithBackend(idToken: String): Boolean =
 @Composable
 fun LoginScreen(
     onSignUpClick: () -> Unit = {},
-    AdminLogin: () -> Unit = {},
+    AdminLogin: (String) -> Unit = {},
     EventPage: (String) -> Unit = {},
     authenticate: suspend (String, String) -> com.cst438.project2.auth.AuthUser = { username, password ->
         com.cst438.project2.auth.AuthApi().login(username, password)
@@ -146,9 +146,15 @@ fun LoginScreen(
                         val user = authenticate(username.trim(), password)
 
                         if (user.isAdmin) {
-                            password = ""
-                            message = "Admin login successful"
-                            AdminLogin()
+                            val token = user.accessToken
+
+                            if (token.isNullOrBlank()) {
+                                message = "Admin login succeeded, but no access token was returned"
+                            } else {
+                                password = ""
+                                message = "Admin login successful"
+                                AdminLogin(token)
+                            }
                         } else {
                             val token = user.accessToken
 
@@ -159,7 +165,6 @@ fun LoginScreen(
                                 message = "Login successful"
                                 EventPage(token)
                             }
-
                         }
                     } catch (cancelled: kotlinx.coroutines.CancellationException) {
                         throw cancelled

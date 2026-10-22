@@ -29,7 +29,7 @@ data class AdminUser (
 )
 
 @Composable
-fun AdminScreen(logout: () -> Unit) {
+fun AdminScreen(accessToken: String, logout: () -> Unit) {
     //temp sign in  credentials
     val users = listOf (
         AdminUser(1, "linus@email.com", "Linus Schaub", "USER"),

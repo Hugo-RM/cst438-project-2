@@ -12,9 +12,6 @@ class User(
     @Column(nullable = false, unique = true)
     var username: String = "",
 
-    @Column(name = "oauth_subject", unique = true)
-    var oauthSubject: String? = null,
-
     // Google "sub" claim; null for accounts created through password registration.
     @Column(name = "oauth_subject", unique = true)
     var oauthSubject: String? = null,

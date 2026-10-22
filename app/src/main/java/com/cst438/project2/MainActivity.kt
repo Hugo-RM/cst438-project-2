@@ -23,9 +23,11 @@ class MainActivity : ComponentActivity() {
             val accessToken = remember { mutableStateOf<String?>(null) }
 
             if(showAdmin.value) {
-                AdminScreen(logout = {
+                AdminScreen(accessToken = accessToken.value.orEmpty(), logout = {
                     showAdmin.value = false
-                })
+                    accessToken.value = null
+
+            })
 
             } else if(showEvent.value){
                 EventScreen(
@@ -61,8 +63,11 @@ class MainActivity : ComponentActivity() {
                 )
             } else {
                 LoginScreen(
+
                     AdminLogin = {
+                        adminToken -> accessToken.value = adminToken
                         showAdmin.value = true
+
                     },
                     EventPage = {
                         idToken -> accessToken.value = idToken
