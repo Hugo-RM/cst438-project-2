@@ -38,10 +38,11 @@ class MainActivity : ComponentActivity() {
                     },
 
                     onProfileClick = {
+                        showCreateEvent.value = false
                         showProfile.value = true
-                        showProfile.value = false
                     },
                     onLogoutClick = {
+                        com.cst438.project2.auth.AuthSession.clear()
                         showEvent.value = false
                         showCreateEvent.value = false
                         showProfile.value = false

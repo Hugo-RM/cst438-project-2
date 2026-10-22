@@ -78,6 +78,18 @@ class SecurityConfig(
                     ).permitAll()
                     .anyRequest().authenticated()
             }
+            .sessionManagement {
+                it.sessionCreationPolicy(
+                    org.springframework.security.config.http.SessionCreationPolicy.STATELESS
+                )
+            }
+            .httpBasic {
+                it.authenticationEntryPoint(
+                    org.springframework.security.web.authentication.HttpStatusEntryPoint(
+                        org.springframework.http.HttpStatus.UNAUTHORIZED
+                    )
+                )
+            }
             .oauth2ResourceServer { it.jwt {} }
 
         return http.build()

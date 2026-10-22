@@ -58,7 +58,16 @@ class AuthService(private val users: UserRepository) {
         }
     }
 
-    private fun publicUser(user: User) = LoginUser(requireNotNull(user.id), requireNotNull(user.username), user.isAdmin)
+    private fun publicUser(user: User): LoginUser {
+        return LoginUser(
+            id = requireNotNull(user.id),
+            username = requireNotNull(user.username) {
+                "Username is required for password-based accounts"
+            },
+
+            admin = user.isAdmin
+        )
+    }
 }
 
 /** Username/password endpoints; OAuth2 and protected API sessions are separate work. */
