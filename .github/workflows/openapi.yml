@@ -1,0 +1,28 @@
+name: OpenAPI contract
+
+on:
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint openapi.yaml
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # Rules come from redocly.yaml at the repo root
+      - name: Lint contract
+        run: npx --yes @redocly/cli lint docs/openapi.yaml

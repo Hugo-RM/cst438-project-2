@@ -36,4 +36,6 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "cst438-project-2"
-include(":app", ":backend")
+include(":backend")
+// The Docker image build leaves app/ out of its context, so the API builds without the Android SDK
+if (file("app").exists()) include(":app")
