@@ -45,8 +45,13 @@ class AuthService(private val users: UserRepository) {
         return try {
             publicUser(users.saveAndFlush(User(username = username,
                 passwordHash = encoder.encode(credentials.password))))
-        } catch (_: DataIntegrityViolationException) {
-            throw ResponseStatusException(HttpStatus.CONFLICT, "Account could not be created")
+        } catch (e: DataIntegrityViolationException) {
+            e.printStackTrace()
+            throw ResponseStatusException(
+                HttpStatus.CONFLICT,
+                "Account could not be created"
+            )
+
         }
     }
 
