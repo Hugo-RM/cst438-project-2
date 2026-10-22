@@ -23,7 +23,7 @@ class MainActivity : ComponentActivity() {
             val accessToken = remember { mutableStateOf<String?>(null) }
 
             if(showAdmin.value) {
-                AdminScreen(accessToken = accessToken.value.orEmpty(), logout = {
+                AdminScreen(logout = {
                     showAdmin.value = false
                     accessToken.value = null
 
@@ -42,9 +42,11 @@ class MainActivity : ComponentActivity() {
                     },
 
                     onProfileClick = {
+                        showCreateEvent.value = false
                         showProfile.value = true
                     },
                     onLogoutClick = {
+                        com.cst438.project2.auth.AuthSession.clear()
                         showEvent.value = false
                         showCreateEvent.value = false
                         showProfile.value = false

@@ -43,7 +43,7 @@ fun EventScreen(
     onCreateEventClick: () -> Unit,
     onProfileClick: () -> Unit,
     onLogoutClick: () -> Unit,
-    accessToken: String?
+    accessToken: String? = null
 ) {
     var selectedScreen by remember { mutableStateOf("Home") }
     val eventApi = remember { EventApi() }
@@ -225,8 +225,10 @@ fun EventScreen(
                     )
                 }
                 "Profile" -> {
-                    Text("Profile")
+                    ProfileScreen()
                 }
+
+
             }
         }
     }

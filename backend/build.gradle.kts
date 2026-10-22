@@ -1,3 +1,6 @@
+import java.security.SecureRandom
+import java.util.Base64
+
 plugins {
     alias(libs.plugins.kotlinJvm)
     alias(libs.plugins.kotlin.spring)
@@ -16,26 +19,26 @@ java {
 }
 
 dependencies {
-    implementation("org.springframework.security:spring-security-crypto")
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("org.springframework.boot:spring-boot-starter-webmvc")
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("tools.jackson.module:jackson-module-kotlin")
+	implementation("org.springframework.security:spring-security-crypto")
+	implementation("org.springframework.boot:spring-boot-starter-actuator")
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+	implementation("org.springframework.boot:spring-boot-starter-validation")
+	implementation("org.springframework.boot:spring-boot-starter-webmvc")
+	implementation("org.jetbrains.kotlin:kotlin-reflect")
+	implementation("tools.jackson.module:jackson-module-kotlin")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
     implementation("org.springframework.security:spring-security-oauth2-jose")
-    runtimeOnly("org.postgresql:postgresql")
-    testImplementation("org.springframework.boot:spring-boot-starter-actuator-test")
-    testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
-    testImplementation("org.springframework.boot:spring-boot-starter-validation-test")
-    testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
-    testImplementation("org.springframework.boot:spring-boot-testcontainers")
-    testImplementation("org.testcontainers:testcontainers-junit-jupiter")
-    testImplementation("org.testcontainers:testcontainers-postgresql")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	runtimeOnly("org.postgresql:postgresql")
+	testImplementation("org.springframework.boot:spring-boot-starter-actuator-test")
+	testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
+	testImplementation("org.springframework.boot:spring-boot-starter-validation-test")
+	testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
+	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+	testImplementation("org.springframework.boot:spring-boot-testcontainers")
+	testImplementation("org.testcontainers:testcontainers-junit-jupiter")
+	testImplementation("org.testcontainers:testcontainers-postgresql")
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 kotlin {
@@ -52,4 +55,6 @@ allOpen {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+    // Throwaway signing key so the app context starts in tests; real deployments set APP_TOKEN_SECRET
+    environment("APP_TOKEN_SECRET", Base64.getEncoder().encodeToString(SecureRandom().generateSeed(32)))
 }

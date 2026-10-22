@@ -26,7 +26,7 @@ services:
       DATABASE_USERNAME: ${DATABASE_USERNAME:-eventhub}
       DATABASE_PASSWORD: ${DATABASE_PASSWORD:-eventhub}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
-      APP_TOKEN_SECRET: ${APP_TOKEN_SECRET:-local-development-secret-change-me-123456789}
+      APP_TOKEN_SECRET: ${APP_TOKEN_SECRET:?Set APP_TOKEN_SECRET in .env (openssl rand -base64 32)}
     ports:
       - "8082:8080"
     depends_on:

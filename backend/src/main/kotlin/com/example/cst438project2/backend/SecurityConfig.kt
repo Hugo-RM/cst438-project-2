@@ -105,6 +105,7 @@ class SecurityConfig(
             .csrf { it.disable() }
             .authorizeHttpRequests {
                 it
+                    .requestMatchers("/actuator/health").permitAll()
                     .requestMatchers(
                         HttpMethod.GET,
                         "/api/v1/health"
@@ -119,6 +120,18 @@ class SecurityConfig(
                         "/api/v1/categories"
                     ).permitAll()
                     .anyRequest().authenticated()
+            }
+            .sessionManagement {
+                it.sessionCreationPolicy(
+                    org.springframework.security.config.http.SessionCreationPolicy.STATELESS
+                )
+            }
+            .httpBasic {
+                it.authenticationEntryPoint(
+                    org.springframework.security.web.authentication.HttpStatusEntryPoint(
+                        org.springframework.http.HttpStatus.UNAUTHORIZED
+                    )
+                )
             }
             .oauth2ResourceServer { it.jwt {} }
 

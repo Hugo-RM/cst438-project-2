@@ -31,7 +31,7 @@ import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
 import com.cst438.project2.R
-import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -49,10 +49,8 @@ private const val SERVER_CLIENT_ID =
 suspend fun signInWithGoogle(context: Context): String {
     val credentialManager = CredentialManager.create(context)
 
-    val googleOption = GetGoogleIdOption.Builder()
-        .setServerClientId(SERVER_CLIENT_ID)
-        .setFilterByAuthorizedAccounts(false)
-        .setAutoSelectEnabled(false)
+    val googleOption = GetSignInWithGoogleOption
+        .Builder(SERVER_CLIENT_ID)
         .build()
 
     val request = GetCredentialRequest.Builder()
@@ -143,28 +141,29 @@ fun LoginScreen(
                 message = "Signing in…"
                 scope.launch {
                     try {
-                        val user = authenticate(username.trim(), password)
+                        val loginUsername = username.trim()
 
-                        if (user.isAdmin) {
-                            val token = user.accessToken
+                        if (':' in loginUsername) {
+                            throw java.io.IOException(
+                                "Username must not contain a colon"
+                            )
+                        }
 
-                            if (token.isNullOrBlank()) {
-                                message = "Admin login succeeded, but no access token was returned"
-                            } else {
-                                password = ""
-                                message = "Admin login successful"
-                                AdminLogin(token)
-                            }
+                        val user = authenticate(loginUsername, password)
+
+                        com.cst438.project2.auth.AuthSession.updatePasswordCredentials(
+                            username = loginUsername,
+                            password = password
+                        )
+
+                        val token = user.accessToken
+
+                        if (token.isNullOrBlank()) {
+                            message = "Login succeeded, but no access token was returned"
                         } else {
-                            val token = user.accessToken
-
-                            if (token.isNullOrBlank()) {
-                                message = "Login succeeded, but no access token was returned"
-                            } else {
-                                password = ""
-                                message = "Login successful"
-                                EventPage(token)
-                            }
+                            password = ""
+                            message = "Login successful"
+                            if (user.isAdmin) AdminLogin(token) else EventPage(token)
                         }
                     } catch (cancelled: kotlinx.coroutines.CancellationException) {
                         throw cancelled
@@ -184,11 +183,18 @@ fun LoginScreen(
             scope.launch {
                 try {
                     val idToken = signInWithGoogle(context)
-                    if (authenticateWithBackend(idToken)) {
-                        message = "Logged in with Google"
-                        EventPage(idToken)
+
+                    val account = com.cst438.project2.auth.AdminApi()
+                        .getCurrentUser(idToken)
+
+                    com.cst438.project2.auth.AuthSession.updateGoogleToken(idToken)
+
+                    message = "Logged in with Google"
+
+                    if (account.role == "ADMIN") {
+                        AdminLogin(idToken)
                     } else {
-                        message = "Backend rejected Google token"
+                        EventPage(idToken)
                     }
                 } catch (cancelled: kotlinx.coroutines.CancellationException) {
                     throw cancelled
