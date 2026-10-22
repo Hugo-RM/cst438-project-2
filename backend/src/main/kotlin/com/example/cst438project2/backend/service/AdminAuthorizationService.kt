@@ -12,14 +12,15 @@ class AdminAuthorizationService(
     private val userRepository: UserRepository
 ) {
     fun requireAdmin(jwt: Jwt?): User {
-        if (jwt == null || jwt.subject.isNullOrBlank()) {
+        val subject = jwt?.subject
+        if (subject.isNullOrBlank()) {
             throw ResponseStatusException(
                 HttpStatus.UNAUTHORIZED,
                 "Authentication required"
             )
         }
 
-        val user = userRepository.findByOauthSubject(jwt.subject)
+        val user = userRepository.findByOauthSubject(subject)
             ?: throw ResponseStatusException(
                 HttpStatus.FORBIDDEN,
                 "No linked user account"

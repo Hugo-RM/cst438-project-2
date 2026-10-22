@@ -1,7 +1,5 @@
 package com.example.cst438project2.backend.entity
 
-
-
 import jakarta.persistence.*
 
 @Entity
@@ -14,12 +12,14 @@ class User(
     @Column(unique = true)
     var username: String? = null,
 
+    // Google "sub" claim; null for accounts created through password registration.
+    @Column(name = "oauth_subject", unique = true)
+    var oauthSubject: String? = null,
+
     @Column(nullable = false)
     var isAdmin: Boolean = false,
 
+    // Nullable for existing rows: accounts without a hash cannot use password login.
     @Column(name = "password_hash")
-    var passwordHash: String? = null,
-
-    @Column(name = "oauth_subject", unique = true)
-    var oauthSubject: String? = null
+    var passwordHash: String? = null
 )
