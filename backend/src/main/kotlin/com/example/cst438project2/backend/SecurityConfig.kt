@@ -62,6 +62,7 @@ class SecurityConfig(
             .csrf { it.disable() }
             .authorizeHttpRequests {
                 it
+                    .requestMatchers("/actuator/health").permitAll()
                     .requestMatchers(
                         HttpMethod.GET,
                         "/api/v1/health"
