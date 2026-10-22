@@ -139,7 +139,21 @@ fun LoginScreen(
                 message = "Signing in…"
                 scope.launch {
                     try {
-                        val user = authenticate(username.trim(), password)
+                        val loginUsername = username.trim()
+
+                        if (':' in loginUsername) {
+                            throw java.io.IOException(
+                                "Username must not contain a colon"
+                            )
+                        }
+
+                        val user = authenticate(loginUsername, password)
+
+                        com.cst438.project2.auth.AuthSession.updatePasswordCredentials(
+                            username = loginUsername,
+                            password = password
+                        )
+
                         password = ""
                         message = "Login successful"
                         if (user.isAdmin) AdminLogin() else EventPage()

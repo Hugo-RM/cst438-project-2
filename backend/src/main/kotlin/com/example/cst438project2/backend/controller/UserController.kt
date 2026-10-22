@@ -3,8 +3,9 @@ package com.example.cst438project2.backend.controller
 import com.example.cst438project2.backend.entity.User
 import com.example.cst438project2.backend.repository.UserRepository
 import org.springframework.http.HttpStatus
-import org.springframework.security.core.annotation.AuthenticationPrincipal
-import org.springframework.security.oauth2.jwt.Jwt
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.Authentication
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -15,7 +16,7 @@ data class CurrentUserResponse(
     val id: Long,
     val username: String?,
     val admin: Boolean,
-    val googleSubject: String,
+    val googleSubject: String?,
     val email: String?
 )
 
@@ -27,30 +28,62 @@ class UserController(
     @GetMapping("/me")
     @Transactional
     fun currentUser(
-        @AuthenticationPrincipal jwt: Jwt?
+        authentication: Authentication?
     ): CurrentUserResponse {
-        if (jwt == null || jwt.subject.isNullOrBlank()) {
-            throw ResponseStatusException(
-                HttpStatus.UNAUTHORIZED,
-                "Authentication required"
-            )
+        if (authentication == null || !authentication.isAuthenticated) {
+            throw unauthorized()
         }
 
-        val user = userRepository.findByOauthSubject(jwt.subject)
-            ?: userRepository.saveAndFlush(
-                User(
-                    username = "google_${jwt.subject}",
-                    oauthSubject = jwt.subject,
-                    isAdmin = false
-                )
-            )
+        val user: User
+        val googleSubject: String?
+        val email: String?
+
+        when (authentication) {
+            is JwtAuthenticationToken -> {
+                val jwt = authentication.token
+                val subject = jwt.subject
+
+                if (subject.isNullOrBlank()) {
+                    throw unauthorized()
+                }
+
+                user = userRepository.findByOauthSubject(subject)
+                    ?: userRepository.saveAndFlush(
+                        User(
+                            username = "google_$subject",
+                            oauthSubject = subject,
+                            isAdmin = false
+                        )
+                    )
+
+                googleSubject = subject
+                email = jwt.getClaimAsString("email")
+            }
+
+            is UsernamePasswordAuthenticationToken -> {
+                user = userRepository.findByUsername(authentication.name)
+                    ?: throw unauthorized()
+
+                googleSubject = user.oauthSubject
+                email = null
+            }
+
+            else -> throw unauthorized()
+        }
 
         return CurrentUserResponse(
             id = requireNotNull(user.id),
             username = user.username,
             admin = user.isAdmin,
-            googleSubject = jwt.subject,
-            email = jwt.getClaimAsString("email")
+            googleSubject = googleSubject,
+            email = email
+        )
+    }
+
+    private fun unauthorized(): ResponseStatusException {
+        return ResponseStatusException(
+            HttpStatus.UNAUTHORIZED,
+            "Authentication required"
         )
     }
 }
