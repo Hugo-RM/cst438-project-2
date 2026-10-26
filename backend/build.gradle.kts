@@ -7,6 +7,22 @@ plugins {
     alias(libs.plugins.kotlin.jpa)
     alias(libs.plugins.spring.boot)
     alias(libs.plugins.spring.dependency.management)
+    alias(libs.plugins.detekt)
+}
+
+detekt {
+    config.setFrom(rootProject.file("config/detekt/detekt.yml"))
+    buildUponDefaultConfig = true
+    baseline = file("detekt-baseline.xml")
+}
+
+// Spring's dependency management would force this project's Kotlin version onto detekt's own classpath
+configurations.matching { it.name == "detekt" }.all {
+    resolutionStrategy.eachDependency {
+        if (requested.group == "org.jetbrains.kotlin") {
+            useVersion(io.gitlab.arturbosch.detekt.getSupportedKotlinVersion())
+        }
+    }
 }
 
 group = "com.example.cst438project2"
@@ -29,6 +45,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
     implementation("org.springframework.security:spring-security-oauth2-jose")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.1")
 	runtimeOnly("org.postgresql:postgresql")
 	testImplementation("org.springframework.boot:spring-boot-starter-actuator-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")

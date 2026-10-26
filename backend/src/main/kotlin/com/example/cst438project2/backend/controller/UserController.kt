@@ -1,5 +1,7 @@
 package com.example.cst438project2.backend.controller
 
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
 import com.example.cst438project2.backend.dto.EventResponse
 import com.example.cst438project2.backend.entity.User
 import com.example.cst438project2.backend.repository.UserRepository
@@ -30,10 +32,16 @@ class UserController(
     private val currentUserService: CurrentUserService,
     private val eventService: EventService
 ) {
+    @Operation(summary = "Events I organize")
+    @ApiResponse(responseCode = "200", description = "The caller's events")
+    @ApiResponse(responseCode = "401", description = "Missing or invalid token")
     @GetMapping("/me/events")
     fun myEvents(authentication: Authentication): List<EventResponse> =
         eventService.getForOrganizer(currentUserService.getOrCreate(authentication))
 
+    @Operation(summary = "Who am I")
+    @ApiResponse(responseCode = "200", description = "The signed-in user")
+    @ApiResponse(responseCode = "401", description = "Missing or invalid token")
     @GetMapping("/me")
     @Transactional
     fun currentUser(

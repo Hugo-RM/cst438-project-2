@@ -1,0 +1,14 @@
+# Project ruleset for detekt, shared by :app and :backend.
+# It builds on detekt's defaults (buildUponDefaultConfig = true), so only the differences are listed.
+# Findings that existed when detekt was added are recorded in each module's detekt-baseline.xml;
+# any new violation fails the build.
+
+naming:
+  FunctionNaming:
+    # Jetpack Compose functions are PascalCase by convention
+    ignoreAnnotated: ['Composable']
+
+style:
+  MagicNumber:
+    # Compose layouts use literal sizes (16.dp, 12.sp)
+    ignoreAnnotated: ['Composable']

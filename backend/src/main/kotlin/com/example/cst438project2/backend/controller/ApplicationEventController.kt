@@ -1,5 +1,7 @@
 package com.example.cst438project2.backend.controller
 
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
 import com.example.cst438project2.backend.service.CurrentUserService
 import com.example.cst438project2.backend.service.EventService
 import org.springframework.http.ResponseEntity
@@ -13,6 +15,11 @@ class AdminEventController(
     private val eventService: EventService,
     private val currentUserService: CurrentUserService
 ) {
+    @Operation(summary = "Remove any event (admin only)")
+    @ApiResponse(responseCode = "204", description = "Deleted")
+    @ApiResponse(responseCode = "401", description = "Missing or invalid token")
+    @ApiResponse(responseCode = "403", description = "Not allowed")
+    @ApiResponse(responseCode = "404", description = "Not found")
     @DeleteMapping("/api/v1/admin/events/{id}")
     fun deleteAnyEvent(
         @PathVariable id: Long,

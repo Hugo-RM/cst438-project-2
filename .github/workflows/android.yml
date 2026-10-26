@@ -2,6 +2,8 @@ name: Android CI
 
 on:
   pull_request:
+  push:
+    branches: [main]
 
 # Cancel an older run when new commits are pushed to the same PR/branch
 concurrency:
@@ -28,8 +30,15 @@ jobs:
       # Caches Gradle dependencies and validates the wrapper jar
       - uses: gradle/actions/setup-gradle@v4
 
+      - name: Static analysis (detekt)
+        run: ./gradlew detekt
+
       - name: Run unit tests
         run: ./gradlew testDebugUnitTest
+
+      # Testcontainers uses the runner's Docker daemon
+      - name: Run backend tests
+        run: ./gradlew :backend:test
 
       - name: Build debug APK
         run: ./gradlew assembleDebug
@@ -39,4 +48,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: unit-test-reports
-          path: app/build/reports/tests/
+          path: |
+            app/build/reports/tests/
+            backend/build/reports/tests/

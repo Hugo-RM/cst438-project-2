@@ -1,0 +1,71 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>CyclomaticComplexMethod:AdminScreen.kt$@Composable fun AdminScreen(logout: () -&gt; Unit)</ID>
+    <ID>CyclomaticComplexMethod:LoginScreen.kt$@Composable fun LoginScreen( onSignUpClick: () -&gt; Unit = {}, AdminLogin: (String) -&gt; Unit = {}, EventPage: (String) -&gt; Unit = {}, authenticate: suspend (String, String) -&gt; com.cst438.project2.auth.AuthUser = { username, password -&gt; com.cst438.project2.auth.AuthApi().login(username, password) } )</ID>
+    <ID>CyclomaticComplexMethod:SignUpScreen.kt$@Composable fun SignUpScreen( onBackToLogin: () -&gt; Unit = {}, onAccountCreated: () -&gt; Unit = {}, register: suspend (String, String) -&gt; com.cst438.project2.auth.AuthUser = { username, password -&gt; com.cst438.project2.auth.AuthApi().register(username, password) } )</ID>
+    <ID>FunctionParameterNaming:LoginScreen.kt$AdminLogin: (String) -&gt; Unit = {}</ID>
+    <ID>FunctionParameterNaming:LoginScreen.kt$EventPage: (String) -&gt; Unit = {}</ID>
+    <ID>LongMethod:AdminScreen.kt$@Composable fun AdminScreen(logout: () -&gt; Unit)</ID>
+    <ID>LongMethod:CreateEventScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun CreateEventScreen( categories: List&lt;String&gt; = listOf("Academic", "Social", "Sports", "Career", "Other"), onCreateClick: ( title: String, description: String, category: String, location: String, eventDate: String, startTime: String, endTime: String) -&gt; Unit )</ID>
+    <ID>LongMethod:EventScreen.kt$@Composable fun EventScreen( onHomeClick: () -&gt; Unit, onCreateEventClick: () -&gt; Unit, onProfileClick: () -&gt; Unit, onLogoutClick: () -&gt; Unit, accessToken: String? = null )</ID>
+    <ID>LongMethod:LoginScreen.kt$@Composable fun LoginScreen( onSignUpClick: () -&gt; Unit = {}, AdminLogin: (String) -&gt; Unit = {}, EventPage: (String) -&gt; Unit = {}, authenticate: suspend (String, String) -&gt; com.cst438.project2.auth.AuthUser = { username, password -&gt; com.cst438.project2.auth.AuthApi().login(username, password) } )</ID>
+    <ID>LongMethod:MainActivity.kt$MainActivity$override fun onCreate(savedInstanceState: Bundle?)</ID>
+    <ID>LongMethod:SignUpScreen.kt$@Composable fun SignUpScreen( onBackToLogin: () -&gt; Unit = {}, onAccountCreated: () -&gt; Unit = {}, register: suspend (String, String) -&gt; com.cst438.project2.auth.AuthUser = { username, password -&gt; com.cst438.project2.auth.AuthApi().register(username, password) } )</ID>
+    <ID>LongParameterList:EventApi.kt$EventApi$( title: String, description: String, categoryId: Long, location: String, eventDate: String, startTime: String, endTime: String, accessToken: String )</ID>
+    <ID>MagicNumber:AdminApi.kt$AdminApi$10_000</ID>
+    <ID>MagicNumber:AdminApi.kt$AdminApi$15_000</ID>
+    <ID>MagicNumber:AdminApi.kt$AdminApi$200</ID>
+    <ID>MagicNumber:AdminApi.kt$AdminApi$299</ID>
+    <ID>MagicNumber:AdminApi.kt$AdminApi$401</ID>
+    <ID>MagicNumber:AdminApi.kt$AdminApi$403</ID>
+    <ID>MagicNumber:AdminApi.kt$AdminApi$404</ID>
+    <ID>MagicNumber:AdminApi.kt$AdminApi$409</ID>
+    <ID>MagicNumber:AuthApi.kt$AuthApi$10_000</ID>
+    <ID>MagicNumber:AuthApi.kt$AuthApi$15_000</ID>
+    <ID>MagicNumber:AuthApi.kt$AuthApi$200</ID>
+    <ID>MagicNumber:AuthApi.kt$AuthApi$299</ID>
+    <ID>MagicNumber:AuthApi.kt$AuthApi$400</ID>
+    <ID>MagicNumber:AuthApi.kt$AuthApi$401</ID>
+    <ID>MagicNumber:AuthApi.kt$AuthApi$409</ID>
+    <ID>MagicNumber:CreateEventScreen.kt$12</ID>
+    <ID>MagicNumber:EventApi.kt$EventApi$10_000</ID>
+    <ID>MagicNumber:EventApi.kt$EventApi$15_000</ID>
+    <ID>MagicNumber:EventApi.kt$EventApi$200</ID>
+    <ID>MagicNumber:EventApi.kt$EventApi$299</ID>
+    <ID>MagicNumber:EventScreen.kt$19</ID>
+    <ID>MagicNumber:LoginScreen.kt$10_000</ID>
+    <ID>MagicNumber:LoginScreen.kt$200</ID>
+    <ID>MagicNumber:LoginScreen.kt$299</ID>
+    <ID>MagicNumber:ProfileApi.kt$ProfileApi$10_000</ID>
+    <ID>MagicNumber:ProfileApi.kt$ProfileApi$15_000</ID>
+    <ID>MagicNumber:ProfileApi.kt$ProfileApi$200</ID>
+    <ID>MagicNumber:ProfileApi.kt$ProfileApi$299</ID>
+    <ID>MagicNumber:ProfileApi.kt$ProfileApi$401</ID>
+    <ID>MagicNumber:ProfileApi.kt$ProfileApi$403</ID>
+    <ID>MaxLineLength:CreateEventScreen.kt$modifier = Modifier.menuAnchor(androidx.compose.material3.MenuAnchorType.PrimaryNotEditable).fillMaxWidth()</ID>
+    <ID>MaxLineLength:EventScreen.kt$"No categories available in database. Please ask an admin to add a category."</ID>
+    <ID>MaxLineLength:EventScreen.kt$text = "Time: ${formatEventTime(event.startsAt)} – ${formatEventTime(event.endsAt)}"</ID>
+    <ID>MaxLineLength:EventScreen.kt$val categoryNames = if (categories.isNotEmpty()) categories.map { it.name } else listOf("Academic", "Social", "Sports", "Career", "Other")</ID>
+    <ID>NewLineAtEndOfFile:AdminApi.kt$com.cst438.project2.auth.AdminApi.kt</ID>
+    <ID>NewLineAtEndOfFile:AdminScreen.kt$com.cst438.project2.ui.AdminScreen.kt</ID>
+    <ID>NewLineAtEndOfFile:AdminUser.kt$com.cst438.project2.AdminUser.kt</ID>
+    <ID>NewLineAtEndOfFile:AuthSession.kt$com.cst438.project2.auth.AuthSession.kt</ID>
+    <ID>NewLineAtEndOfFile:LoginTest.kt$com.cst438.project2.LoginTest.kt</ID>
+    <ID>NewLineAtEndOfFile:ProfileApi.kt$com.cst438.project2.auth.ProfileApi.kt</ID>
+    <ID>NewLineAtEndOfFile:ProfileScreen.kt$com.cst438.project2.ui.ProfileScreen.kt</ID>
+    <ID>SwallowedException:EventScreen.kt$error: Exception</ID>
+    <ID>SwallowedException:LoginScreen.kt$e: NoCredentialException</ID>
+    <ID>ThrowsCount:LoginScreen.kt$@Composable fun LoginScreen( onSignUpClick: () -&gt; Unit = {}, AdminLogin: (String) -&gt; Unit = {}, EventPage: (String) -&gt; Unit = {}, authenticate: suspend (String, String) -&gt; com.cst438.project2.auth.AuthUser = { username, password -&gt; com.cst438.project2.auth.AuthApi().login(username, password) } )</ID>
+    <ID>TooGenericExceptionCaught:EventScreen.kt$error: Exception</ID>
+    <ID>TooGenericExceptionCaught:LoginScreen.kt$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:LoginScreen.kt$error: Exception</ID>
+    <ID>UseCheckOrError:EventScreen.kt$throw IllegalStateException( "No categories available in database. Please ask an admin to add a category." )</ID>
+    <ID>UseCheckOrError:EventScreen.kt$throw IllegalStateException( "Please sign in before creating an event" )</ID>
+    <ID>UseCheckOrError:LoginScreen.kt$throw IllegalStateException("Unexpected credential type")</ID>
+    <ID>WildcardImport:AdminScreen.kt$import androidx.compose.foundation.layout.*</ID>
+    <ID>WildcardImport:AdminScreen.kt$import androidx.compose.material3.*</ID>
+    <ID>WildcardImport:AdminScreen.kt$import androidx.compose.runtime.*</ID>
+  </CurrentIssues>
+</SmellBaseline>

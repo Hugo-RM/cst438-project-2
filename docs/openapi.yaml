@@ -11,11 +11,10 @@ info:
     EventHub lets people create, publish and manage events (meetups, concerts, workshops)
     and lets other people find them and RSVP.
 
-    **Authentication.** Protected endpoints expect `Authorization: Bearer <Google ID token>`.
-    The backend validates the token's issuer (`https://accounts.google.com`) and its audience
-    (the app's Google OAuth client ID). A local user row is created on first use.
-    `POST /api/v1/auth/login` and `/register` are a separate username/password flow that
-    verifies credentials and returns the account, but does **not** issue a token.
+    **Authentication.** Protected endpoints expect `Authorization: Bearer <token>`. The token is either
+    a Google ID token, validated against Google's issuer (`https://accounts.google.com`) and the app's
+    OAuth client ID as audience (a local user row is created on first use), or the `accessToken`
+    returned by `POST /api/v1/auth/login`, a one-hour JWT signed by the API (issuer `eventhub-app`).
 
     **Errors.** Errors are returned as RFC 9457 Problem Details (see `components/schemas/Problem`).
   license:
@@ -106,8 +105,8 @@ paths:
       operationId: login
       summary: Check a username and password
       description: >-
-        Returns the account when the credentials match. An unknown username and a wrong password
-        return the same 401. No token is issued by this endpoint.
+        Returns the account and an `accessToken` when the credentials match. An unknown username and
+        a wrong password return the same 401.
       security: []
       requestBody:
         required: true
@@ -434,18 +433,30 @@ paths:
       tags: [Users]
       operationId: getMe
       summary: Who am I (identity from the token)
-      description: Also used by the Android app to confirm the backend accepts a Google ID token.
+      description: Also used by the Android app to confirm the backend accepts its token.
       responses:
         '200':
-          description: Claims from the caller's token
+          description: The caller's account
           content:
             application/json:
               schema:
                 type: object
-                required: [googleSubject]
+                required: [id, admin]
                 properties:
+                  id:
+                    type: integer
+                    format: int64
+                    example: 7
+                  username:
+                    type: string
+                    nullable: true
+                    example: sam@csumb.edu
+                  admin:
+                    type: boolean
+                    example: false
                   googleSubject:
                     type: string
+                    nullable: true
                     example: '110248495921238986420'
                   email:
                     type: string
@@ -472,6 +483,55 @@ paths:
                   $ref: '#/components/schemas/Event'
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/v1/users:
+    get:
+      tags: [Admin]
+      operationId: listUsers
+      summary: List all users (admin only)
+      responses:
+        '200':
+          description: Every user, ordered by id
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AdminUser'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/v1/users/{userId}:
+    delete:
+      tags: [Admin]
+      operationId: deleteUser
+      summary: Delete a user and all their data (admin only)
+      description: Also deletes the user's RSVPs, the events they organize and those events' RSVPs.
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 7
+      responses:
+        '204':
+          description: Deleted. No body.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
         '500':
           $ref: '#/components/responses/InternalError'
 
@@ -571,6 +631,27 @@ components:
         admin:
           type: boolean
           example: false
+        accessToken:
+          type: string
+          nullable: true
+          description: Bearer token for the protected endpoints, valid for one hour. Returned by login only.
+          example: eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJldmVudGh1Yi1hcHAifQ.c2lnbmF0dXJl
+
+    AdminUser:
+      type: object
+      required: [id, role]
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 7
+        username:
+          type: string
+          nullable: true
+          example: sam
+        role:
+          type: string
+          enum: [USER, ADMIN]
 
     Category:
       type: object

@@ -1,5 +1,7 @@
 package com.example.cst438project2.backend.controller
 
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
 import com.example.cst438project2.backend.dto.CategoryRequest
 import com.example.cst438project2.backend.dto.CategoryResponse
 import com.example.cst438project2.backend.service.CategoryService
@@ -21,9 +23,17 @@ class CategoryController(
     private val categoryService: CategoryService,
     private val currentUserService: CurrentUserService
 ) {
+    @Operation(summary = "List categories")
+    @ApiResponse(responseCode = "200", description = "All categories")
     @GetMapping
     fun getCategories(): List<CategoryResponse> = categoryService.getAll()
 
+    @Operation(summary = "Create a category (admin only)")
+    @ApiResponse(responseCode = "201", description = "Created")
+    @ApiResponse(responseCode = "400", description = "Invalid request")
+    @ApiResponse(responseCode = "401", description = "Missing or invalid token")
+    @ApiResponse(responseCode = "403", description = "Not allowed")
+    @ApiResponse(responseCode = "409", description = "Category already exists")
     @PostMapping
     fun createCategory(
         @Valid @RequestBody request: CategoryRequest,
@@ -33,6 +43,12 @@ class CategoryController(
         return ResponseEntity.status(201).body(categoryService.create(request))
     }
 
+    @Operation(summary = "Delete a category (admin only)")
+    @ApiResponse(responseCode = "204", description = "Deleted")
+    @ApiResponse(responseCode = "401", description = "Missing or invalid token")
+    @ApiResponse(responseCode = "403", description = "Not allowed")
+    @ApiResponse(responseCode = "404", description = "Not found")
+    @ApiResponse(responseCode = "409", description = "Category is in use")
     @DeleteMapping("/{id}")
     fun deleteCategory(
         @PathVariable id: Long,
