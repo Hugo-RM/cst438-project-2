@@ -1,0 +1,55 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ComplexCondition:AuthController.kt$AuthService$credentials.username.isBlank() || credentials.username.trim().length &gt; 100 || credentials.password.isBlank() || credentials.password.toByteArray(Charsets.UTF_8).size &gt; 72 || (registering &amp;&amp; credentials.password.length &lt; 6)</ID>
+    <ID>EmptyFunctionBlock:BackendApplicationTests.kt$BackendApplicationTests${ }</ID>
+    <ID>InvalidPackageDeclaration:EventServiceTest.kt$package com.example.cst438project2.backend.service</ID>
+    <ID>LongParameterList:Event.kt$Event$( @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: Long? = null, @Column(nullable = false) var title: String = "", var description: String = "", var startsAt: LocalDateTime? = null, var endsAt: LocalDateTime? = null, var location: String = "", var capacity: Int? = null, var status: String = "ACTIVE", @ManyToOne @JoinColumn(name = "organizer_id", nullable = false) var organizer: User? = null, @ManyToOne @JoinColumn(name = "category_id", nullable = false) var category: Category? = null )</ID>
+    <ID>MagicNumber:AppTokenService.kt$AppTokenService$3600</ID>
+    <ID>MagicNumber:AuthController.kt$AuthService$100</ID>
+    <ID>MagicNumber:AuthController.kt$AuthService$12</ID>
+    <ID>MagicNumber:AuthController.kt$AuthService$6</ID>
+    <ID>MagicNumber:AuthController.kt$AuthService$72</ID>
+    <ID>MagicNumber:CategoryController.kt$CategoryController$201</ID>
+    <ID>MagicNumber:EventController.kt$EventController$100</ID>
+    <ID>MagicNumber:EventController.kt$EventController$201</ID>
+    <ID>MagicNumber:PasswordAuthenticationConfig.kt$PasswordAuthenticationConfig$12</ID>
+    <ID>MagicNumber:RsvpController.kt$RsvpController$201</ID>
+    <ID>MagicNumber:SecurityConfig.kt$SecurityConfig$32</ID>
+    <ID>MatchingDeclarationName:ApplicationEventController.kt$AdminEventController</ID>
+    <ID>MatchingDeclarationName:HealthApplication.kt$HealthController</ID>
+    <ID>MaxLineLength:AuthController.kt$AuthService$throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Enter a username and a password (6–72 bytes for registration)")</ID>
+    <ID>NewLineAtEndOfFile:AdminAuthorizationService.kt$com.example.cst438project2.backend.service.AdminAuthorizationService.kt</ID>
+    <ID>NewLineAtEndOfFile:BackendApplication.kt$com.example.cst438project2.backend.BackendApplication.kt</ID>
+    <ID>NewLineAtEndOfFile:Category.kt$com.example.cst438project2.backend.entity.Category.kt</ID>
+    <ID>NewLineAtEndOfFile:CategoryMaker.kt$com.example.cst438project2.backend.CategoryMaker.kt</ID>
+    <ID>NewLineAtEndOfFile:Event.kt$com.example.cst438project2.backend.entity.Event.kt</ID>
+    <ID>NewLineAtEndOfFile:EventRepository.kt$com.example.cst438project2.backend.repository.EventRepository.kt</ID>
+    <ID>NewLineAtEndOfFile:EventService.kt$com.example.cst438project2.backend.service.EventService.kt</ID>
+    <ID>NewLineAtEndOfFile:HealthApplication.kt$com.example.cst438project2.backend.HealthApplication.kt</ID>
+    <ID>NewLineAtEndOfFile:PasswordAuthenticationConfig.kt$com.example.cst438project2.backend.PasswordAuthenticationConfig.kt</ID>
+    <ID>NewLineAtEndOfFile:SecurityConfig.kt$com.example.cst438project2.backend.SecurityConfig.kt</ID>
+    <ID>NewLineAtEndOfFile:User.kt$com.example.cst438project2.backend.entity.User.kt</ID>
+    <ID>NewLineAtEndOfFile:UserRepository.kt$com.example.cst438project2.backend.repository.UserRepository.kt</ID>
+    <ID>PrintStackTrace:AuthController.kt$AuthService$e</ID>
+    <ID>RethrowCaughtException:SecurityConfig.kt$SecurityConfig$throw googleError</ID>
+    <ID>ReturnCount:CurrentUserService.kt$CurrentUserService$@Transactional fun getOrCreate(authentication: Authentication): User</ID>
+    <ID>SpreadOperator:BackendApplication.kt$(*args)</ID>
+    <ID>SwallowedException:SecurityConfig.kt$SecurityConfig$appError: JwtException</ID>
+    <ID>ThrowsCount:AdminAuthorizationService.kt$AdminAuthorizationService$fun requireAdmin(jwt: Jwt?): User</ID>
+    <ID>ThrowsCount:CurrentUserService.kt$CurrentUserService$@Transactional fun getOrCreate(authentication: Authentication): User</ID>
+    <ID>ThrowsCount:EventService.kt$EventService$@Transactional fun patch( id: Long, request: EventPatchRequest, user: User ): EventResponse</ID>
+    <ID>ThrowsCount:RsvpService.kt$RsvpService$@Transactional fun create(eventId: Long, request: RsvpRequest, user: User): RsvpResponse</ID>
+    <ID>ThrowsCount:UserController.kt$UserController$@Operation(summary = "Who am I") @ApiResponse(responseCode = "200", description = "The signed-in user") @ApiResponse(responseCode = "401", description = "Missing or invalid token") @GetMapping("/me") @Transactional fun currentUser( authentication: Authentication? ): CurrentUserResponse</ID>
+    <ID>TooManyFunctions:EventService.kt$EventService</ID>
+    <ID>WildcardImport:AdminUserController.kt$import org.springframework.web.bind.annotation.*</ID>
+    <ID>WildcardImport:AuthController.kt$import org.springframework.web.bind.annotation.*</ID>
+    <ID>WildcardImport:Category.kt$import jakarta.persistence.*</ID>
+    <ID>WildcardImport:Event.kt$import jakarta.persistence.*</ID>
+    <ID>WildcardImport:EventController.kt$import org.springframework.web.bind.annotation.*</ID>
+    <ID>WildcardImport:Rsvp.kt$import jakarta.persistence.*</ID>
+    <ID>WildcardImport:RsvpController.kt$import org.springframework.web.bind.annotation.*</ID>
+    <ID>WildcardImport:User.kt$import jakarta.persistence.*</ID>
+  </CurrentIssues>
+</SmellBaseline>

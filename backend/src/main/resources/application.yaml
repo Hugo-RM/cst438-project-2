@@ -8,6 +8,11 @@ spring:
     username: ${DATABASE_USERNAME:eventhub}
     password: ${DATABASE_PASSWORD:eventhub}
 
+  # Every error response uses RFC 9457 Problem Details (docs/error-model.md)
+  mvc:
+    problemdetails:
+      enabled: true
+
   jpa:
     hibernate:
       ddl-auto: update

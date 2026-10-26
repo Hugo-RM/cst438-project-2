@@ -1,5 +1,7 @@
 package com.example.cst438project2.backend.auth
 
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
 import com.example.cst438project2.backend.entity.User
 import com.example.cst438project2.backend.repository.UserRepository
 import com.example.cst438project2.backend.service.AppTokenService
@@ -86,10 +88,18 @@ class AuthService(private val users: UserRepository, private val appTokenService
 @RequestMapping("/api/v1/auth")
 class AuthController(private val auth: AuthService) {
     /** Checks a stored password and returns the corresponding account. */
+    @Operation(summary = "Log in with a username and password")
+    @ApiResponse(responseCode = "200", description = "Credentials are valid; returns an access token")
+    @ApiResponse(responseCode = "400", description = "Invalid request")
+    @ApiResponse(responseCode = "401", description = "Wrong username or password")
     @PostMapping("/login")
     fun login(@RequestBody credentials: Credentials) = auth.login(credentials)
 
     /** Allows the existing sign-up page to provision accounts for database login. */
+    @Operation(summary = "Create a username/password account")
+    @ApiResponse(responseCode = "201", description = "Account created")
+    @ApiResponse(responseCode = "400", description = "Invalid request")
+    @ApiResponse(responseCode = "409", description = "Username already exists")
     @PostMapping("/register")
     fun register(@RequestBody credentials: Credentials): ResponseEntity<LoginUser> =
         ResponseEntity.status(HttpStatus.CREATED).body(auth.register(credentials))

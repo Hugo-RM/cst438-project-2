@@ -106,6 +106,8 @@ class SecurityConfig(
             .authorizeHttpRequests {
                 it
                     .requestMatchers("/actuator/health").permitAll()
+                    // Swagger UI and the generated spec are public; /error lets 404s and 400s through unchanged
+                    .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/error").permitAll()
                     .requestMatchers(
                         HttpMethod.GET,
                         "/api/v1/health"
